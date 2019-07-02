@@ -1,5 +1,5 @@
 
-![图片描述]()
+![图片描述](https://github.com/AngerJYF/drag_and_drop/blob/master/src/assets/images/girl.gif)
 
 ### 一、项目分类
 项目代码位于src目录下 `asset(静态资源)`、`common(公共资源、包括js、组件、样式)`、`router`、`store`、`views(视图)`
