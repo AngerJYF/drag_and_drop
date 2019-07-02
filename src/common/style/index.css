@@ -1,0 +1,57 @@
+/* 
+  全局公用样式 
+  多人协作开发时，设置父类标记  例:  .home div{...}
+*/
+@font-face {
+  font-family: 'Alibaba';
+  src: url(../../assets/font/Alibaba-PuHuiTi-Regular.otf);
+}
+body{
+  height: 100%;
+  font-family: Alibaba !important;
+}
+#app,.app-layout{
+  height: 100%;
+}
+.clearfix:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+.ivu-layout-header {
+  background: #283142 !important;
+  padding: 0 50px;
+  height: 56px !important;
+  line-height: 56px !important;
+}
+
+.slide-left {
+  max-width: 229px !important;
+  flex: 0 0 229px !important;
+  background: #283142 !important;
+  border-top: 2px solid #212836;
+}
+.app-content {
+  background: #212836;
+  padding: 25px 30px;
+}
+.ivu-menu-vertical.ivu-menu-light:after {
+  background: none !important;
+}
+.ivu-menu-light.ivu-menu-vertical .ivu-menu-item-active:not(.ivu-menu-submenu):after {
+  background: none !important;
+}
+.ivu-menu-light {
+  background: none !important;
+}
+.nav-left .ivu-menu {
+  color: #ffffffa1 !important;
+}
+.ivu-menu-light.ivu-menu-vertical .ivu-menu-item-active:not(.ivu-menu-submenu) {
+  color: #FFFFFF !important;
+  background: #2F7DFF !important;
+  opacity: 1 !important;
+  z-index: 2;
+}
+.pull_right {float: right} 
