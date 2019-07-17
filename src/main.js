@@ -12,10 +12,15 @@ import 'style/index.css'
 /* import draggable from 'vuedraggable' 
 Vue.use(draggable) */
 
+import VueDragResize from 'vue-drag-resize' //缩放、拖拽
+Vue.component('vue-drag-resize', VueDragResize)
+
+
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 
 Vue.use(ElementUI)
+
 
 Vue.config.productionTip = false
 

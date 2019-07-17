@@ -1,41 +1,85 @@
 <script>
+// import MyComponent from "./ChangeSize";
+import { maxBy, minBy, cloneDeep } from "lodash";
+import VueDragResize from "vue-drag-resize";
+import { mapState, mapMutations } from "vuex";
+
+const defaultWidth = 100;
+const defaultHeight = 100;
+
 export default {
-  props: ["itemAttr"],
+  props: ["itemAttr", "auxiliaryLine"],
+  data() {
+    return {
+      dataIndex: -1
+    };
+  },
+  computed: {
+    ...mapState({
+      saveDataArr(state) {
+        return state.TransferData.saveDataArr;
+      }
+    })
+  },
   render(createElement) {
     var self = this;
     return createElement(
-      this.itemAttr.tagName,
+      VueDragResize,
       {
         style: this.itemAttr.style,
-        //动态绑定class，同:class
-        class: {
-          isAbsolute: true
+        on: {
+          clicked: e => {
+            // console.log("e", e.target);
+            // console.log("e", e.currentTarget);
+            let index = e.currentTarget.getAttribute("data-index");
+            console.log(index);
+            this.dataIndex = index;
+          },
+          resizing: this.resizing,
+          dragging: this.resizing,
+          dragstop: this.dragstop
         },
-        //普通html特性
-        attrs: {
-          // href: "",
-          // target: "_blank",
-          // draggable: this.itemAttr.draggable
-        }
-        //给div绑定click事件
-        // on: {
-        //   click: () => {}
-        // },
-        // 仅用于组件，用于监听原生事件，而不是组件内部使用
-        // `vm.$emit` 触发的事件。
-        /* nativeOn: {
-          click: () => {}
-        } */
+        attrs: {}
       },
-      this.itemAttr.text
+      [
+        createElement(
+          this.itemAttr.tagName,
+          {
+            style: this.itemAttr.style,
+            class: {
+              isAbsolute: true
+            }
+          },
+          this.itemAttr.text
+        )
+      ]
     );
+  },
+  methods: {
+    clickHandler() {},
+    // 改变大小
+    resizing(newRect) {
+      const Rect = cloneDeep(newRect);
+      Rect.width = newRect.width - defaultWidth;
+      Rect.height = newRect.height - defaultHeight;
+      this.setDataById({
+        index: this.dataIndex,
+        value: Rect
+      });
+    },
+    dragstop() {
+      this.setDataOnStop();
+    },
+    ...mapMutations(["setDataById", "setDataOnStop"])
   }
 };
 </script>
 
 <style scoped>
 .isAbsolute {
-  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: inline-block;
 }
 </style>
 

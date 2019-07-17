@@ -6,42 +6,44 @@
     </div>
     <div class="show_view" @dragover="dragover" @drop="drop">
       <RenderCom
+        :is-conflict-check="true"
+        :snap="true"
+        @boxStyle="getBoxStyle"
         v-for="(item,index) of getSaveData"
         :key="index"
         :itemAttr="item"
+        :auxiliaryLine="auxiliary_line"
         :data-index="index"
         @click.native="changeVuexData(index)"
       ></RenderCom>
-        <!-- @mousedown.native="changeAxios($event,index)" -->
-      <!-- <ArrayAdd></ArrayAdd> -->
     </div>
     <div class="edit_model">
       <div class="attr_edit" v-if="currentIndex>=0">
         <div v-for="(item,key) in getSaveData[currentIndex].style" :key="key">
           <p>{{Mapping[key]}}</p>
-          <br>
+          <br />
           <el-input
             placeholder="请输入内容"
             :value="getSaveData[currentIndex].style[key]"
             @input="changeVal($event,currentIndex,key)"
           ></el-input>
-          <br>
-          <br>
+          <br />
+          <br />
         </div>
       </div>
       <div v-for="(item,el) in getSaveData[currentIndex]" v-if="el=='text'" :key="el">
         <p>{{Mapping[el]}}</p>
-        <br>
+        <br />
         <el-input
           placeholder="请输入内容"
           :value="getSaveData[currentIndex][el]"
           @input="changeText($event,currentIndex)"
         ></el-input>
-        <br>
-        <br>
+        <br />
+        <br />
       </div>
 
-      <br>
+      <br />
       <div class="save_changes">
         <el-button type="primary" plain @click="saveChanges">保存设置</el-button>
       </div>
@@ -56,21 +58,22 @@ import LivePeople from "@/common/components/Live2d";
 // import "@/common/js/canvas-nest.min.js";
 import RenderCom from "./components/renderComponents";
 import ArrayAdd from "./components/ArrayAdd";
+import ChangeSize from "./components/ChangeSize";
 
 let Mapping = {
   left: "距离父容器左边距离(X):",
   top: "距离父容器顶部距离(Y):",
   text: "文本内容:",
   fontSize: "字体大小:",
-  width: "宽度"
+  width: "宽度",
+  height: "高度"
 };
 
 export default {
   name: "Layout",
   components: {
     LivePeople,
-    RenderCom,
-    ArrayAdd
+    RenderCom
   },
   data() {
     return {
@@ -79,12 +82,26 @@ export default {
       textContent: "",
       fontSize: "",
       currentIndex: -1,
-      Mapping
+      Mapping,
+      auxiliary_line: false,
+      getStyleData: ""
     };
+  },
+  computed: {
+    // 获取 vuex 存储的值   this.getSaveData
+    ...mapState({
+      getSaveData(state) {
+        return state.TransferData.saveDataArr;
+      }
+    })
   },
   methods: {
     // 获取更改 vuex 数据的方法
     ...mapMutations(["transferData"]),
+
+    getBoxStyle(val) {
+      this.getStyleData = val;
+    },
     // 修改样式
     changeVal(e, index, key) {
       if (Object.keys(this.Mapping).includes(key) == true) {
@@ -97,23 +114,6 @@ export default {
       this.getSaveData[index].text = "";
       this.getSaveData[index].text = e;
     },
-    
-    /* changeAxios(e, val) {
-      console.log("e", e);
-      console.log("index", val);
-      function move(e) {
-        console.log("e", e);
-      }
-      document.addEventListener("mousemove", move);
-      document.addEventListener("mouseup", function() {
-        document.removeEventListener("mousemove", move);
-      });
-      console.log(this.getSaveData[val].style["left"]);
-      this.setLeft = this.getSaveData[val].style["left"];
-      this.setTop = this.getSaveData[val].style["top"];
-      this.fontSize = this.getSaveData[val].style["fontSize"];
-      this.textContent = this.getSaveData[val].text;
-    }, */
     // 1.设置元素为可拖放
     // 2.元素被拖动时，会发生什么
     dragStart(e) {
@@ -129,61 +129,49 @@ export default {
       // e.preventDefault();
 
       let getTags = e.dataTransfer.getData("tags");
-      console.log("getTags:===>", getTags);
       let sidebarWidth = document.getElementsByClassName("sidebar")[0]
         .offsetWidth;
+      let getPageX = e.pageX - sidebarWidth;
+      let getPageY = e.pageY;
 
       let component = {
         tagName: getTags,
         draggable: true,
         text: "默认",
         style: {
-          left: e.clientX - sidebarWidth + "px",
-          top: e.clientY + "px",
+          left: getPageX + "px",
+          top: getPageY + "px",
           fontSize: "20px",
-          width: "100px"
+          width: "50px",
+          height: "50px"
         }
       };
 
       this.transferData(component);
-      this.showAttrData();
       this.changeVuexData(this.getSaveData.length - 1);
     },
     // 获取 || 更改 vuex 中的值
     changeVuexData(val) {
+      this.oneIndex = val;
       this.currentIndex = val;
       this.setLeft = this.getSaveData[val].style["left"];
       this.setTop = this.getSaveData[val].style["top"];
       this.fontSize = this.getSaveData[val].style["fontSize"];
       this.textContent = this.getSaveData[val].text;
     },
-    showAttrData() {
-      this.setLeft = this.getSaveData[this.getSaveData.length - 1].style[
-        "left"
-      ];
-      this.setTop = this.getSaveData[this.getSaveData.length - 1].style["top"];
-      this.fontSize = this.getSaveData[this.getSaveData.length - 1].style[
-        "fontSize"
-      ];
-      this.textContent = this.getSaveData[this.getSaveData.length - 1].text;
-    },
     saveChanges() {
       console.log("vuex's data:", JSON.parse(JSON.stringify(this.getSaveData)));
     }
-  },
-  computed: {
-    // 获取 vuex 存储的值   this.getSaveData
-    ...mapState({
-      getSaveData(state) {
-        return state.TransferData.saveDataArr;
-      }
-    })
   },
   watch: {}
 };
 </script>
 
 <style scoped>
+/* .isAbsolute >>> .vdr {
+  top: 0 !important;
+  left: 0 !important;
+} */
 .layout > div {
   height: 100%;
   display: inline-block;
